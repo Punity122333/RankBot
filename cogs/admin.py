@@ -23,27 +23,46 @@ class AdminCog(commands.Cog):
         leaderboard_channel: discord.TextChannel,
         moderator_role: Optional[discord.Role] = None
     ):
-        if not is_moderator_interaction(interaction):
-            await interaction.response.send_message("You don't have permission to use this command.", ephemeral=True)
-            return
-        
-        # Defer the response to prevent timeout
-        await interaction.response.defer()
-        
-        CONFIG['PROBLEM_CHANNEL_ID'] = problem_channel.id
-        CONFIG['MODERATOR_CHANNEL_ID'] = moderator_channel.id
-        CONFIG['LEADERBOARD_CHANNEL_ID'] = leaderboard_channel.id
-        if moderator_role:
-            CONFIG['MODERATOR_ROLE_ID'] = moderator_role.id
-        
-        save_config()
-        await interaction.followup.send(
-            f"✅ Setup complete!\n"
-            f"Problem Channel: {problem_channel.mention}\n"
-            f"Moderator Channel: {moderator_channel.mention}\n"
-            f"Leaderboard Channel: {leaderboard_channel.mention}"
-            + (f"\nModerator Role: {moderator_role.mention}" if moderator_role else "")
-        )
+        try:
+            # Defer immediately to prevent timeout
+            await interaction.response.defer()
+            
+            if not is_moderator_interaction(interaction):
+                await interaction.followup.send("You don't have permission to use this command.", ephemeral=True)
+                return
+            
+            CONFIG['PROBLEM_CHANNEL_ID'] = problem_channel.id
+            CONFIG['MODERATOR_CHANNEL_ID'] = moderator_channel.id
+            CONFIG['LEADERBOARD_CHANNEL_ID'] = leaderboard_channel.id
+            if moderator_role:
+                CONFIG['MODERATOR_ROLE_ID'] = moderator_role.id
+            
+            save_config()
+            await interaction.followup.send(
+                f"✅ Setup complete!\n"
+                f"Problem Channel: {problem_channel.mention}\n"
+                f"Moderator Channel: {moderator_channel.mention}\n"
+                f"Leaderboard Channel: {leaderboard_channel.mention}"
+                + (f"\nModerator Role: {moderator_role.mention}" if moderator_role else "")
+            )
+        except discord.HTTPException as e:
+            print(f"HTTP error in setup command: {e}")
+            try:
+                if not interaction.response.is_done():
+                    await interaction.response.send_message("❌ Network error occurred. Please try again.", ephemeral=True)
+                else:
+                    await interaction.followup.send("❌ Network error occurred. Please try again.", ephemeral=True)
+            except:
+                pass  # If we can't send error message, just log it
+        except Exception as e:
+            print(f"Unexpected error in setup command: {e}")
+            try:
+                if not interaction.response.is_done():
+                    await interaction.response.send_message("❌ An error occurred. Please try again.", ephemeral=True)
+                else:
+                    await interaction.followup.send("❌ An error occurred. Please try again.", ephemeral=True)
+            except:
+                pass
 
     @commands.command(name="sync_guild")
     async def sync_guild(self, ctx):

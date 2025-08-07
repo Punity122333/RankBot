@@ -20,7 +20,6 @@ class RankBot(commands.Bot):
         cogs = [
             'cogs.admin',
             'cogs.problems', 
-            'cogs.submissions',
             'cogs.scoring',
             'cogs.leaderboard'
         ]
