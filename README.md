@@ -4,11 +4,12 @@ A Discord bot for managing programming competitions with PDF problem distributio
 
 ## Features
 
-### PDF Problem Management
+### PDF & CP Problem Management
 
-- Moderators can post problems as PDFs to a designated channel
+- Moderators can post **math** problems (PDF) and **CP** problems (URL) using interactive commands
+- Problems are automatically posted in the dedicated problem channel selected via `/setup`
 - Problems are assigned unique IDs for reference
-- Users can submit solutions by tagging the bot with PDF attachments
+- Users submit solutions by tagging the bot with PDF attachments (math) or using the interactive dropdown/code modal (CP)
 
 ### Code Submission System
 
@@ -65,20 +66,21 @@ Use the `/setup` command to configure channels:
 /setup #problems #moderators #leaderboard @ModeratorRole
 ```
 
+**Note:** Both math and CP problems are posted in the problem channel you select here. Posting is automatic when a moderator uses the interactive post command.
+
 ## Commands
 
 ### Moderator Commands
 
 - `/setup <problem_channel> <moderator_channel> <leaderboard_channel> [moderator_role]` - Initial bot setup
-- `/post_problem <title> [description]` - Post a new problem (attach PDF)
+- `/post` - Interactive post command (choose Math or CP, then fill out modal)
 - `/score_solution <solution_id> <score>` - Score a PDF solution (0-100)
 - `/score_submission <submission_id> <completeness> <elegance> <speed>` - Score code submission (0-10 each)
 - `/review_queue` - View pending submissions awaiting review
 
-### User Commands  
+### User Commands
 
-- `/submit <language> <code>` - Submit a code solution
-- `/submit_pdf <problem_id> <pdf_file>` - Submit a PDF solution for a problem
+- `/submit` - Interactive solution submission (choose Math or CP, then select problem from dropdown)
 - `/leaderboard` - View current rankings
 - Tag the bot with PDF attachment and problem ID to submit PDF solution (in problem channel)
 
